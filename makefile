@@ -9,18 +9,18 @@ OBJ_FILES := $(SRC_FILES:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 
 CC := clang
 CPP :=
-CFLAGS := -g -Wall -Wextra -O3
+CFLAGS := -g -Wall -Wextra -O3 -Wno-unused-parameter
 LDFLAGS :=
 
-all: demo
+all: test
 
 lib: libads.a
 
-demo: obj/demo.o libads.a
-	$(CC) -o demo $(OBJ_DIR)/demo.o -L. -lads
+test: obj/test.o libads.a
+	$(CC) -o test $(OBJ_DIR)/test.o -L. -lads `pkg-config --libs glib-2.0`
 
-obj/demo.o: demo.c | $(OBJ_DIR)
-	$(CC) $(CFLAGS) -o $(OBJ_DIR)/demo.o -c demo.c
+obj/test.o: tests/test.c | $(OBJ_DIR)
+	$(CC) -Iinclude `pkg-config --cflags glib-2.0` $(CFLAGS) -o $(OBJ_DIR)/test.o -c tests/test.c
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	$(CC) -Iinclude $(CFLAGS) -c $< -o $@
@@ -32,5 +32,5 @@ libads.a: $(OBJ_FILES)
 	ar rcs libads.a $(OBJ_FILES)
 
 clean:
-	rm -f demo *.a
+	rm -f test *.a
 	rm -rf obj
